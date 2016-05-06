@@ -50,8 +50,8 @@ class SimpleRequest<T> extends BaseRequest<T> implements ParameterizableRequest<
         this.method = httpMethod;
     }
 
-    public SimpleRequest(HttpUrl url, OkHttpClient client, ObjectMapper mapper, String httpMethod) {
-        super(url, client, mapper.reader(new TypeReference<Map<String, Object>>() {}), mapper.reader(new TypeReference<Map<String, Object>>() {}), mapper.writer());
+    public SimpleRequest(HttpUrl url, OkHttpClient client, ObjectMapper mapper, String httpMethod, TypeReference<T> typeReference) {
+        super(url, client, mapper.reader(typeReference), mapper.reader(new TypeReference<Map<String, Object>>() {}), mapper.writer());
         this.method = httpMethod;
     }
 

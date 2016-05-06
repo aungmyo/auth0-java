@@ -29,10 +29,12 @@ import com.auth0.request.AuthenticationRequest;
 import com.auth0.request.AuthorizableRequest;
 import com.auth0.request.ParameterizableRequest;
 import com.auth0.util.Telemetry;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 
+import java.util.List;
 import java.util.Map;
 
 public class RequestFactory {
@@ -48,8 +50,14 @@ public class RequestFactory {
         this.userAgent = userAgent;
     }
 
-    public <T> ParameterizableRequest<T> GET(HttpUrl url, OkHttpClient client, ObjectMapper mapper, Class<T> clazz) {
+    public <T> AuthorizableRequest<T> GET(HttpUrl url, OkHttpClient client, ObjectMapper mapper, Class<T> clazz) {
         final SimpleRequest<T> request = new SimpleRequest<>(url, client, mapper, "GET", clazz);
+        addMetrics(request);
+        return request;
+    }
+
+    public AuthorizableRequest<List<Map<String, Object>>> rawGETList(HttpUrl url, OkHttpClient client, ObjectMapper mapper) {
+        final SimpleRequest<List<Map<String, Object>>> request = new SimpleRequest<>(url, client, mapper, "GET", new TypeReference<List<Map<String, Object>>>() {});
         addMetrics(request);
         return request;
     }
@@ -66,8 +74,14 @@ public class RequestFactory {
         return request;
     }
 
-    public ParameterizableRequest<Map<String, Object>> rawPOST(HttpUrl url, OkHttpClient client, ObjectMapper mapper) {
-        final SimpleRequest<Map<String, Object>> request = new SimpleRequest<>(url, client, mapper, "POST");
+    public AuthorizableRequest<Map<String, Object>> rawPOST(HttpUrl url, OkHttpClient client, ObjectMapper mapper) {
+        final SimpleRequest<Map<String, Object>> request = new SimpleRequest<>(url, client, mapper, "POST", new TypeReference<Map<String, Object>>() {});
+        addMetrics(request);
+        return request;
+    }
+
+    public AuthorizableRequest<List<Map<String, Object>>> rawPOSTList(HttpUrl url, OkHttpClient client, ObjectMapper mapper) {
+        final SimpleRequest<List<Map<String, Object>>> request = new SimpleRequest<>(url, client, mapper, "POST", new TypeReference<List<Map<String, Object>>>() {});
         addMetrics(request);
         return request;
     }
@@ -91,14 +105,26 @@ public class RequestFactory {
         return request;
     }
 
-    public <T> ParameterizableRequest<T> PATCH(HttpUrl url, OkHttpClient client, ObjectMapper mapper, Class<T> clazz) {
-        final SimpleRequest<T> request = new SimpleRequest<>(url, client, mapper, "GET", clazz);
+    public <T> AuthorizableRequest<T> PATCH(HttpUrl url, OkHttpClient client, ObjectMapper mapper, Class<T> clazz) {
+        final SimpleRequest<T> request = new SimpleRequest<>(url, client, mapper, "PATCH", clazz);
         addMetrics(request);
         return request;
     }
 
     public <T> ParameterizableRequest<T> DELETE(HttpUrl url, OkHttpClient client, ObjectMapper mapper, Class<T> clazz) {
         final SimpleRequest<T> request = new SimpleRequest<>(url, client, mapper, "DELETE", clazz);
+        addMetrics(request);
+        return request;
+    }
+
+    public AuthorizableRequest<List<Map<String, Object>>> rawDELETEList(HttpUrl url, OkHttpClient client, ObjectMapper mapper) {
+        final SimpleRequest<List<Map<String, Object>>> request = new SimpleRequest<>(url, client, mapper, "DELETE", new TypeReference<List<Map<String, Object>>>() {});
+        addMetrics(request);
+        return request;
+    }
+
+    public AuthorizableRequest<Void> DELETE(HttpUrl url, OkHttpClient client, ObjectMapper mapper) {
+        final VoidRequest request = new VoidRequest(url, client, mapper, "DELETE");
         addMetrics(request);
         return request;
     }
